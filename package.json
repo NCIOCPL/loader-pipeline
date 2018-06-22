@@ -1,0 +1,33 @@
+{
+  "name": "loader-pipeline",
+  "version": "1.0.0",
+  "description": "This is a very simple ETL library for creating NodeJS based loaders.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "testPathIgnorePatterns": [
+      "<rootDir>/__tests__/test-steps"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nciocpl/loader-pipeline.git"
+  },
+  "author": "Bryan Pizzillo",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/nciocpl/loader-pipeline/issues"
+  },
+  "homepage": "https://github.com/nciocpl/loader-pipeline#readme",
+  "devDependencies": {
+    "@types/jest": "^23.1.1",
+    "@types/node": "^10.3.4",
+    "jest": "^23.1.0",
+    "winston": "^3.0.0",
+    "winston-null-transport": "git+https://github.com/NCIOCPL/winston-null-transport.git#1.0.0"
+  }
+}
