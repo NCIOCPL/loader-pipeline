@@ -25,6 +25,13 @@ class TestRecordTransformer extends AbstractRecordTransformer {
     }
 
     /**
+     * Called if error has occurred to allow for clean exit.
+     */
+    async abort() {
+        return;
+    }
+
+    /**
      * Method called after all records have been transformed
      */
     async end() {

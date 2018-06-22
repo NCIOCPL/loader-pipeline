@@ -1,13 +1,17 @@
 const AbstractPipelineStep = require('../../lib/abstract-pipeline-step');
 
 class ProcessorErrorTestStep extends AbstractPipelineStep {
-    /**
-     * Creates a new instance of the AbstractPipelineStep
-     * @param {object} logger 
-     */
-    constructor(logger) {
-      super(logger);    
+  /**
+   * Creates a new instance of the AbstractPipelineStep
+   * @param {object} logger 
+   */
+  constructor(logger) {
+    super(logger);    
   }
+  
+  async begin() {}
+  async end() {}
+  async abort() {}
 
   /**
    * A static method to validate a configuration object against this module type's schema
