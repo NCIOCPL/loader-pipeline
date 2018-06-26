@@ -43,6 +43,15 @@ describe('PipelineProcessor', async () => {
         });
 
         ////////////
+        /// SEARCHPATHS
+        ///////////
+        it('throws on searchPaths is junk', () => {
+            expect(() => {
+                new PipelineProcessor(null, {...goodConfig, searchPaths: "" });
+            }).toThrow("searchPaths must be an array");
+        });
+
+        ////////////
         /// SOURCE
         ///////////
         it('throws on source is null', () => {
@@ -185,20 +194,38 @@ describe('PipelineProcessor', async () => {
             ],
             loader: goodStepInfo
         });
-    
-        const processor = new PipelineProcessor(logger, goodConfig);
-    
+        
         ////////////////////////
         /// Everything worked ok
         ////////////////////////
 
         
         it('loads a string step', async() => {
+            const processor = new PipelineProcessor(logger, goodConfig);
+
             let actual = await processor.loadPipelineStep(AbstractPipelineStep,PATH_TO_MODULE, {});
             expect(actual).toBeTruthy();
         });
 
+        it('loads a string step using custom search path', async() => {
+            const searchPath = path.join(__dirname, 'test-steps');
+            const stepPath = "./loaders/test-record-loader";
+            const processor = new PipelineProcessor(logger, {
+                ...goodConfig,
+                loader: {
+                    module: stepPath, 
+                    config: {}
+                },
+                searchPaths: [searchPath]
+            });
+
+            let actual = await processor.loadPipelineStep(AbstractRecordLoader, stepPath, {});
+            expect(actual).toBeTruthy();
+        });
+
         it('loads a module step', async() => {
+            const processor = new PipelineProcessor(logger, goodConfig);
+
             const ProcessorErrorTestStep = require(PATH_TO_MODULE);
             let actual = await processor.loadPipelineStep(AbstractPipelineStep,ProcessorErrorTestStep, {});
             expect(actual).toBeTruthy();
@@ -210,6 +237,7 @@ describe('PipelineProcessor', async () => {
         /// Error Cases
         //////////////////////
         describe('throws on', async() => {
+            const processor = new PipelineProcessor(logger, goodConfig);
 
             it('expected class is junk', async () => {
     
@@ -242,7 +270,7 @@ describe('PipelineProcessor', async () => {
                      await processor.loadPipelineStep(AbstractPipelineStep,'/path/does/not/exist', {});
                 } catch (err) {
                     expect(err).toMatchObject({
-                        code: "MODULE_NOT_FOUND"
+                        message: "Could not load step, /path/does/not/exist."
                     });
                 }    
             });
@@ -409,7 +437,7 @@ describe('PipelineProcessor', async () => {
                 await processor.loadPipeline();
             } catch (err) {
                 expect(err).toMatchObject({
-                    code: "MODULE_NOT_FOUND"
+                    message: "Could not load step, badpath."
                 });
             }
         });
