@@ -2,8 +2,8 @@ const winston               = require('winston');
 const WinstonNullTransport  = require('winston-null-transport');
 const path                  = require('path');
 
-const { 
-    PipelineProcessor, AbstractRecordTransformer, AbstractRecordLoader, AbstractRecordSource 
+const {
+    PipelineProcessor, AbstractRecordTransformer, AbstractRecordLoader, AbstractRecordSource
 }   = require('../index');
 const AbstractPipelineStep    = require('../lib/abstract-pipeline-step');
 
@@ -19,16 +19,16 @@ const logger = winston.createLogger({
     ]
 })
 
-describe('PipelineProcessor', async () => {
+describe('PipelineProcessor', () => {
 
 
     describe('Constructor Error Handling', () => {
 
         const goodStepInfo = Object.freeze({
-            module: "string", 
+            module: "string",
             config: {}
         });
-        
+
         const goodConfig = Object.freeze({
             source: goodStepInfo,
             transformers: [
@@ -38,8 +38,8 @@ describe('PipelineProcessor', async () => {
         });
 
         const badStepInfo = Object.freeze({
-            module: 5, 
-            config: "string" 
+            module: 5,
+            config: "string"
         });
 
         ////////////
@@ -106,16 +106,16 @@ describe('PipelineProcessor', async () => {
             expect(() => {
                 new PipelineProcessor(null, {...goodConfig, transformers: [ goodStepInfo, badStepInfo ]});
             }).toThrow("The transformers configuration is not valid");
-        });    
+        });
     })
 
     describe('isBasicConfigStructValid', () => {
 
         const goodStepInfo = Object.freeze({
-            module: "string", 
+            module: "string",
             config: {}
         });
-        
+
         const goodConfig = Object.freeze({
             source: goodStepInfo,
             transformers: [
@@ -126,7 +126,7 @@ describe('PipelineProcessor', async () => {
 
         const processor = new PipelineProcessor(
             logger,
-            goodConfig    
+            goodConfig
         )
 
         it('false on no config', () => {
@@ -179,14 +179,14 @@ describe('PipelineProcessor', async () => {
         })
     });
 
-    describe('loadPipelineStep', async () => {
+    describe('loadPipelineStep', () => {
         const PATH_TO_MODULE = path.join(__dirname, 'test-steps', 'processor-error-test-step')
 
         const goodStepInfo = Object.freeze({
-            module: "string", 
+            module: "string",
             config: {}
         });
-        
+
         const goodConfig = Object.freeze({
             source: goodStepInfo,
             transformers: [
@@ -194,12 +194,12 @@ describe('PipelineProcessor', async () => {
             ],
             loader: goodStepInfo
         });
-        
+
         ////////////////////////
         /// Everything worked ok
         ////////////////////////
 
-        
+
         it('loads a string step', async() => {
             const processor = new PipelineProcessor(logger, goodConfig);
 
@@ -213,7 +213,7 @@ describe('PipelineProcessor', async () => {
             const processor = new PipelineProcessor(logger, {
                 ...goodConfig,
                 loader: {
-                    module: stepPath, 
+                    module: stepPath,
                     config: {}
                 },
                 searchPaths: [searchPath]
@@ -230,17 +230,17 @@ describe('PipelineProcessor', async () => {
             let actual = await processor.loadPipelineStep(AbstractPipelineStep,ProcessorErrorTestStep, {});
             expect(actual).toBeTruthy();
         });
-        
-        
+
+
 
         //////////////////////
         /// Error Cases
         //////////////////////
-        describe('throws on', async() => {
+        describe('throws on', () => {
             const processor = new PipelineProcessor(logger, goodConfig);
 
             it('expected class is junk', async () => {
-    
+
                 expect.assertions(1);
                 try {
                      await processor.loadPipelineStep("foo");
@@ -248,11 +248,11 @@ describe('PipelineProcessor', async () => {
                     expect(err).toMatchObject({
                         message: "ExpectedClass needs to be a base class for the module that is being loaded"
                     });
-                }    
+                }
             });
 
             it('module is junk', async () => {
-    
+
                 expect.assertions(1);
                 try {
                      await processor.loadPipelineStep(AbstractPipelineStep, 5, {});
@@ -260,11 +260,11 @@ describe('PipelineProcessor', async () => {
                     expect(err).toMatchObject({
                         message: "Invalid type for module parameter"
                     });
-                }    
+                }
             });
 
             it('inability to load the module', async () => {
-    
+
                 expect.assertions(1);
                 try {
                      await processor.loadPipelineStep(AbstractPipelineStep,'/path/does/not/exist', {});
@@ -272,11 +272,11 @@ describe('PipelineProcessor', async () => {
                     expect(err).toMatchObject({
                         message: "Could not load step, /path/does/not/exist."
                     });
-                }    
+                }
             });
 
             it('module not of type', async () => {
-    
+
                 expect.assertions(1);
                 try {
                      await processor.loadPipelineStep(AbstractRecordTransformer,TestRecordSource, {});
@@ -284,7 +284,7 @@ describe('PipelineProcessor', async () => {
                     expect(err).toMatchObject({
                         message: "TestRecordSource does not match expected type of AbstractRecordTransformer"
                     });
-                }    
+                }
             });
 
 
@@ -293,7 +293,7 @@ describe('PipelineProcessor', async () => {
                 try {
                     await processor.loadPipelineStep(
                         AbstractPipelineStep,
-                        PATH_TO_MODULE, 
+                        PATH_TO_MODULE,
                         { fail: true }
                     );
                 } catch (err) {
@@ -302,17 +302,17 @@ describe('PipelineProcessor', async () => {
                      });
                 }
             });
-    
+
             it('invalid step configuration with errors', async () => {
-    
+
                 // TODO: We should check the logger to see if messages are written
-    
+
                 expect.assertions(1);
                 try {
                     await processor.loadPipelineStep(
                         AbstractPipelineStep,
-                        PATH_TO_MODULE, 
-                        { 
+                        PATH_TO_MODULE,
+                        {
                             fail: true,
                             errors: [ new Error("Test Error")]
                         }
@@ -322,15 +322,15 @@ describe('PipelineProcessor', async () => {
                          message: "Invalid Configuration"
                      });
                 }
-            });        
-        
+            });
+
             it('inability to get an instance of the step', async () => {
                 expect.assertions(1);
                 try {
                     await processor.loadPipelineStep(
                         AbstractPipelineStep,
-                        PATH_TO_MODULE, 
-                        { 
+                        PATH_TO_MODULE,
+                        {
                             fail: true,
                             errors: []
                         }
@@ -339,13 +339,13 @@ describe('PipelineProcessor', async () => {
                      expect(err).toMatchObject({
                          message: "Could not get instance"
                      });
-                }            
-            });    
+                }
+            });
         })
-        
+
     });
 
-    describe('loadPipeline', async () => {        
+    describe('loadPipeline', () => {
 
         const goodConfig = {
             "source": {
@@ -363,15 +363,15 @@ describe('PipelineProcessor', async () => {
                 "config": {}
             }
         };
-        
+
         it('loads', async () => {
             const processor = new PipelineProcessor(
                 logger,
-                goodConfig    
+                goodConfig
             )
 
             await processor.loadPipeline();
-    
+
             expect(processor.sourceStep).toBeInstanceOf(TestRecordSource);
             expect(processor.transformerSteps).toHaveLength(1);
             expect(processor.transformerSteps[0]).toBeInstanceOf(TestRecordTransformer);
@@ -383,7 +383,7 @@ describe('PipelineProcessor', async () => {
                 logger,
                 { ...goodConfig, source: { module: TestRecordLoader, config: {} } }
             );
-            
+
             expect.assertions(1);
             try {
                 await processor.loadPipeline();
@@ -391,7 +391,7 @@ describe('PipelineProcessor', async () => {
                 expect(err).toMatchObject({
                     message: "TestRecordLoader does not match expected type of AbstractRecordSource"
                 });
-            }            
+            }
         });
 
         it('has incorrect loader type', async() => {
@@ -399,7 +399,7 @@ describe('PipelineProcessor', async () => {
                 logger,
                 { ...goodConfig, loader: { module: TestRecordSource, config: {} } }
             );
-            
+
             expect.assertions(1);
             try {
                 await processor.loadPipeline();
@@ -407,7 +407,7 @@ describe('PipelineProcessor', async () => {
                 expect(err).toMatchObject({
                     message: "TestRecordSource does not match expected type of AbstractRecordLoader"
                 });
-            }            
+            }
         });
 
         it('has incorrect transformer type', async() => {
@@ -415,7 +415,7 @@ describe('PipelineProcessor', async () => {
                 logger,
                 { ...goodConfig, transformers: [{ module: TestRecordSource, config: {} }] }
             );
-            
+
             expect.assertions(1);
             try {
                 await processor.loadPipeline();
@@ -423,7 +423,7 @@ describe('PipelineProcessor', async () => {
                 expect(err).toMatchObject({
                     message: "TestRecordSource does not match expected type of AbstractRecordTransformer"
                 });
-            }            
+            }
         });
 
         it('encounters an error', async () => {
@@ -431,7 +431,7 @@ describe('PipelineProcessor', async () => {
                 logger,
                 { ...goodConfig, source: { module: "badpath", config: {} } }
             );
-            
+
             expect.assertions(1);
             try {
                 await processor.loadPipeline();
@@ -460,15 +460,15 @@ describe('PipelineProcessor', async () => {
 
             class SpiedRecordSource extends AbstractRecordSource {
                 constructor(logger) { super(logger); }
-                async begin() { sc.source.b++; }    
+                async begin() { sc.source.b++; }
                 async getRecords() { sc.source.gr++; return d.src; }
-                async end() { 
+                async end() {
                     sc.source.e++;
                     if (errorInEnd) {throw new Error("Error in End Test");}
                 }
-                async abort() { 
+                async abort() {
                     sc.source.a++;
-                    if (errorInAbort) { throw new Error("Error in Abort Test"); } 
+                    if (errorInAbort) { throw new Error("Error in Abort Test"); }
                 }
                 static ValidateConfig(config) { return []; }
                 static async GetInstance(logger, config) { return new SpiedRecordSource(logger); }
@@ -477,7 +477,7 @@ describe('PipelineProcessor', async () => {
             class SpiedRecordTransformer extends AbstractRecordTransformer {
                 constructor(logger) { super(logger); }
                 async begin() { sc.transformer.b++;  }
-                async transform(record) { 
+                async transform(record) {
                     sc.transformer.t++;
                     if (errorInXfrm) { throw new Error("Error in Xform Test"); }
                     const rtn = {data: record.data + 1};
@@ -486,22 +486,22 @@ describe('PipelineProcessor', async () => {
                 }
                 async end() { sc.transformer.e++; }
                 async abort() { sc.transformer.a++; }
-                static ValidateConfig(config) { return []; }            
-                static async GetInstance(logger, config) { return new SpiedRecordTransformer(logger); } 
+                static ValidateConfig(config) { return []; }
+                static async GetInstance(logger, config) { return new SpiedRecordTransformer(logger); }
             }
 
             class SpiedRecordLoader extends AbstractRecordLoader {
                 constructor(logger) { super(logger); }
                 async begin() { sc.loader.b++; }
-                async loadRecord(record) { 
-                    sc.loader.lr++; 
+                async loadRecord(record) {
+                    sc.loader.lr++;
                     const rtn = {data: record.data + 1};
-                    d.ldr.push(rtn);                    
+                    d.ldr.push(rtn);
                 }
                 async abort() { sc.loader.a++; }
                 async end() { sc.loader.e++; }
-                static ValidateConfig(config) { return []; }                
-                static async GetInstance(logger, config) { return new SpiedRecordLoader(logger); }  
+                static ValidateConfig(config) { return []; }
+                static async GetInstance(logger, config) { return new SpiedRecordLoader(logger); }
             }
 
             const config = {
@@ -518,7 +518,7 @@ describe('PipelineProcessor', async () => {
         return { sc, d, processor };
     }
 
-    describe('run', async () => {
+    describe('run', () => {
 
         it('Processes and Increments Count', async () => {
 
@@ -534,18 +534,18 @@ describe('PipelineProcessor', async () => {
                 //nothing
                 expect(err).not.toBeTruthy();
             }
-            
 
-            expect(sc).toEqual({                
+
+            expect(sc).toEqual({
                     source: { b:1, gr:1, a:0, e:1 },
                     transformer: { b:1, t:1, a:0, e:1 },
-                    loader: { b:1, lr:1, a:0, e:1 }                
+                    loader: { b:1, lr:1, a:0, e:1 }
             });
 
-            expect(d).toEqual({                
+            expect(d).toEqual({
                 src: srcData,
                 xfrm: [ {data:2}],
-                ldr: [ {data:3}]  
+                ldr: [ {data:3}]
             });
 
             expect(processor.recordsProcessed).toBe(1);
@@ -564,16 +564,16 @@ describe('PipelineProcessor', async () => {
                 expect(err).toBeTruthy;
             }
 
-            expect(sc).toEqual({                
+            expect(sc).toEqual({
                     source: { b:1, gr:1, a:1, e:0 },
                     transformer: { b:1, t:1, a:1, e:0 },
-                    loader: { b:1, lr:0, a:1, e:0 }                
+                    loader: { b:1, lr:0, a:1, e:0 }
             });
 
-            expect(d).toEqual({                
+            expect(d).toEqual({
                 src: srcData,
                 xfrm: [],
-                ldr: []  
+                ldr: []
             });
 
         })
@@ -591,19 +591,19 @@ describe('PipelineProcessor', async () => {
                 expect(err).toBeTruthy;
             }
 
-            expect(sc).toEqual({                
+            expect(sc).toEqual({
                     source: { b:1, gr:1, a:1, e:1 },
                     transformer: { b:1, t:1, a:1, e:1 },
-                    loader: { b:1, lr:1, a:1, e:1 }                
+                    loader: { b:1, lr:1, a:1, e:1 }
             });
 
-            expect(d).toEqual({                
+            expect(d).toEqual({
                 src: srcData,
                 xfrm: [ {data:2}],
-                ldr: [ {data:3}]  
+                ldr: [ {data:3}]
             });
 
-        })        
+        })
 
         it('Error in Abort', async () => {
 
@@ -618,19 +618,19 @@ describe('PipelineProcessor', async () => {
                 expect(err).toBeTruthy;
             }
 
-            expect(sc).toEqual({                
+            expect(sc).toEqual({
                     source: { b:1, gr:1, a:0, e:1 },
                     transformer: { b:1, t:1, a:0, e:1 },
-                    loader: { b:1, lr:1, a:0, e:1 }                
+                    loader: { b:1, lr:1, a:0, e:1 }
             });
 
-            expect(d).toEqual({                
+            expect(d).toEqual({
                 src: srcData,
                 xfrm: [ {data:2}],
-                ldr: [ {data:3}]  
+                ldr: [ {data:3}]
             });
 
         })
     })
-    
+
 })

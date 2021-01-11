@@ -16,7 +16,7 @@ const logger = winston.createLogger({
 })
 
 
-describe('AbstractPipelineStep', async () => {
+describe('AbstractPipelineStep', () => {
 
     it('throws on instantiation', () => {
         expect((() => {
@@ -37,17 +37,17 @@ describe('AbstractPipelineStep', async () => {
             await AbstractPipelineStep.GetInstance(logger, {});
         } catch (err) {
             expect(err.message).toEqual("Cannot call abstract static method GetInstance from derrived class");
-        }        
+        }
     })
 
 
     it('must implement begin', () => {
         class Test extends AbstractPipelineStep {
-            constructor(logger) { super(logger); }    
+            constructor(logger) { super(logger); }
             async end() {}
             async abort() {}
         }
-    
+
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method begin");
@@ -55,26 +55,26 @@ describe('AbstractPipelineStep', async () => {
 
     it('must implement abort', () => {
         class Test extends AbstractPipelineStep {
-            constructor(logger) { super(logger); }    
+            constructor(logger) { super(logger); }
             async begin() {}
             async end() {}
         }
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method abort");
-            
+
     })
 
     it('must implement end', () => {
         class Test extends AbstractPipelineStep {
-            constructor(logger) { super(logger); }    
+            constructor(logger) { super(logger); }
             async begin() {}
             async abort() {}
         }
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method end");
-            
+
     })
 
 })
@@ -85,15 +85,15 @@ describe('AbstractRecordSource', () => {
             new AbstractRecordSource(logger);
         })).toThrow("Must implement abstract method begin") //Because of how super works
     })
-    
+
     it('must implement getRecords', () => {
         class Test extends AbstractRecordSource {
-            constructor(logger) { super(logger); }  
-            async begin() {}  
+            constructor(logger) { super(logger); }
+            async begin() {}
             async end() {}
             async abort() {}
         }
-    
+
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method getRecords");
@@ -109,12 +109,12 @@ describe('AbstractRecordTransformer', () => {
 
     it('must implement transform', () => {
         class Test extends AbstractRecordTransformer {
-            constructor(logger) { super(logger); }  
-            async begin() {}  
+            constructor(logger) { super(logger); }
+            async begin() {}
             async end() {}
             async abort() {}
         }
-    
+
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method transform");
@@ -127,15 +127,15 @@ describe('AbstractRecordLoader', () => {
             new AbstractRecordLoader(logger);
         })).toThrow("Must implement abstract method begin") //Because of how super works
     })
-    
+
     it('must implement loadRecord', () => {
         class Test extends AbstractRecordLoader {
-            constructor(logger) { super(logger); }  
-            async begin() {}  
+            constructor(logger) { super(logger); }
+            async begin() {}
             async end() {}
             async abort() {}
         }
-    
+
         expect(() => {
             new Test();
         }).toThrow("Must implement abstract method loadRecord");
