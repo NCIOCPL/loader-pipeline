@@ -24,9 +24,9 @@
   },
   "homepage": "https://github.com/nciocpl/loader-pipeline#readme",
   "devDependencies": {
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^29.5.12",
     "@types/node": "^14.14.20",
-    "jest": "^26.6.3",
+    "jest": "^29.7.0",
     "winston": "^3.3.3",
     "winston-null-transport": "git+https://github.com/NCIOCPL/winston-null-transport.git#v1.0.1"
   }
